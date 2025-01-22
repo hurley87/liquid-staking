@@ -24,8 +24,8 @@ export const Header = () => {
           <DropdownMenu>
             <DropdownMenuTrigger>
               <Button variant="ghost">
-                {user.wallet?.address.slice(0, 6)}...
-                {user.wallet?.address.slice(-4)}
+                {address.slice(0, 6)}...
+                {address.slice(-4)}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
