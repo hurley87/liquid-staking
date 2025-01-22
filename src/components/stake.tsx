@@ -14,7 +14,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
-import { createWalletClient, custom, formatEther, parseEther } from 'viem';
+import { createWalletClient, custom } from 'viem';
 import { baseSepolia } from 'viem/chains';
 import { publicClient } from '@/lib/publicClient';
 import { liquidStakingAbi } from '@/lib/LiquidStaking';
@@ -50,8 +50,6 @@ export const Stake = () => {
   const chainId = wallet?.chainId?.split(':')[1];
   const [stakedAmount, setStakedAmount] = useState('0');
   const { balance } = useBalance(address);
-
-  console.log(balance);
 
   if (!ready) return null;
 
