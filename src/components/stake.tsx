@@ -84,7 +84,7 @@ export const Stake = () => {
               )}
             />
             {!user ? (
-              <Button onClick={login} className="w-full" size="lg" disabled>
+              <Button onClick={login} className="w-full" size="lg">
                 Connect Wallet
               </Button>
             ) : chainId !== VALID_CHAIN_ID ? (
