@@ -32,6 +32,7 @@ contract LiquidStaking is Ownable, Pausable, ReentrancyGuard {
     uint256 public totalStakedPEAQ;
     bool public emergencyMode = false;
 
+    event Staked(address indexed user, uint256 amount);
     event WithdrawalRequested(address indexed user, uint256 amount, uint256 unlockTime);
     event WithdrawalClaimed(address indexed user, uint256 amount);
     event EmergencyModeActivated();
@@ -61,6 +62,8 @@ contract LiquidStaking is Ownable, Pausable, ReentrancyGuard {
         // Mint stPEAQ tokens to the sender based on the deposit
         stPeaqToken.mint(msg.sender, msg.value);
         totalStakedPEAQ += msg.value;
+
+        emit Staked(msg.sender, msg.value);
     }
 
     /// @notice Initiates a withdrawal request by burning stPEAQ tokens

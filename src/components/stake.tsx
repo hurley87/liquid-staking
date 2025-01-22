@@ -14,6 +14,13 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
+import { createWalletClient, custom, formatEther, parseEther } from 'viem';
+import { baseSepolia } from 'viem/chains';
+import { publicClient } from '@/lib/publicClient';
+import { liquidStakingAbi } from '@/lib/LiquidStaking';
+import { liquidStakingAddress } from '@/lib/LiquidStaking';
+import { toast } from 'sonner';
+import { useBalance } from '@/hooks/useBalance';
 
 const VALID_CHAIN_ID = '84532';
 
@@ -31,6 +38,7 @@ const defaultValues: Partial<AccountFormValues> = {
 
 export const Stake = () => {
   const { user, login, ready } = usePrivy();
+  const address = user?.wallet?.address as `0x${string}`;
   const [isStaking, setIsStaking] = useState(false);
   const [isSwitchingNetwork, setIsSwitchingNetwork] = useState(false);
   const form = useForm<AccountFormValues>({
@@ -40,11 +48,47 @@ export const Stake = () => {
   const { wallets } = useWallets();
   const wallet = wallets[0];
   const chainId = wallet?.chainId?.split(':')[1];
+  const [stakedAmount, setStakedAmount] = useState('0');
+  const { balance } = useBalance(address);
+
+  console.log(balance);
 
   if (!ready) return null;
 
-  const onSubmit = (values: AccountFormValues) => {
-    console.log(values);
+  const onSubmit = async (values: AccountFormValues) => {
+    setIsStaking(true);
+
+    try {
+      const ethereumProvider = (await wallet?.getEthereumProvider()) as any;
+
+      const walletClient = await createWalletClient({
+        account: address,
+        chain: baseSepolia,
+        transport: custom(ethereumProvider),
+      });
+
+      const { request }: any = await publicClient.simulateContract({
+        address: liquidStakingAddress,
+        abi: liquidStakingAbi,
+        functionName: 'deposit',
+        args: [],
+        account: address,
+        value: BigInt(Math.floor(parseFloat(values.amount) * 1e18)),
+      });
+
+      const hash = await walletClient.writeContract(request);
+
+      await publicClient.waitForTransactionReceipt({
+        hash,
+      });
+
+      toast.success(`Staked ${values.amount} PEAQ`);
+
+      setIsStaking(false);
+    } catch (e) {
+      console.log(e);
+      setIsStaking(false);
+    }
   };
 
   const switchNetwork = async () => {
@@ -53,12 +97,18 @@ export const Stake = () => {
     setIsSwitchingNetwork(false);
   };
 
+  const updateAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setStakedAmount(e.target.value);
+  };
+
   return (
-    <div className="w-full max-w-lg mx-auto border shadow-md rounded-3xl">
+    <div className="w-full max-w-lg mx-auto border shadow-md rounded-3rxl">
       <div className="flex p-8">
         <div className="w-full flex flex-col text-left">
           <div className="text-xs">Staked amount</div>
-          <div className="text-xl font-bold">0 stPEAQ</div>
+          <div className="text-xl font-bold">
+            {(parseFloat(balance) / 1e18).toFixed(3)} stPEAQ
+          </div>
         </div>
         <div className="w-full flex flex-col text-left">
           <div className="text-xs">APR</div>
@@ -77,7 +127,12 @@ export const Stake = () => {
                     Amount
                   </FormLabel>
                   <FormControl>
-                    <Input placeholder="0.00" {...field} />
+                    <Input
+                      placeholder="0.00"
+                      {...field}
+                      onChange={updateAmount}
+                      value={stakedAmount}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -102,7 +157,6 @@ export const Stake = () => {
                 type="submit"
                 size="lg"
                 disabled={isStaking}
-                onClick={() => setIsStaking(true)}
               >
                 {isStaking ? 'Staking...' : 'Stake'}
               </Button>
@@ -112,7 +166,7 @@ export const Stake = () => {
         <div className="flex flex-col gap-2 text-xs">
           <div className="flex justify-between">
             <div>You will receive</div>
-            <div>0 stPEAQ</div>
+            <div>{stakedAmount} stPEAQ</div>
           </div>
           <div className="flex justify-between">
             <div>Exchange rate</div>
