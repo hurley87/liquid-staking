@@ -1,9 +1,9 @@
-import "@nomicfoundation/hardhat-toolbox-viem";
+import '@nomicfoundation/hardhat-toolbox-viem';
 
 require('dotenv').config();
 
 const config = {
-  solidity: "0.8.28",
+  solidity: '0.8.28',
   networks: {
     'base-mainnet': {
       url: 'https://mainnet.base.org',
