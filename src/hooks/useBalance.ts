@@ -7,6 +7,7 @@ export function useBalance(walletAddress: string) {
 
   useEffect(() => {
     const fetchBalance = async () => {
+      if (!walletAddress) return;
       try {
         const balance = await publicClient.readContract({
           address: stPEAQAddress,

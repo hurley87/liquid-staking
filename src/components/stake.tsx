@@ -113,69 +113,73 @@ export const Stake = () => {
           <div className="text-xl font-bold">3.1%</div>
         </div> */}
       </div>
-      <div className="w-full max-w-lg mx-auto border shadow-md rounded-3xl p-8 flex flex-col gap-8">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="amount"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-left flex justify-start">
-                    Amount of PEAQ to stake
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="0.00"
-                      {...field}
-                      onChange={updateAmount}
-                      value={stakedAmount}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+      {!user ? (
+        <div className="w-full max-w-lg mx-auto border shadow-md rounded-3xl p-8 flex flex-col gap-8">
+          <Button onClick={login} className="w-full" size="lg">
+            Connect Wallet
+          </Button>
+        </div>
+      ) : (
+        <div className="w-full max-w-lg mx-auto border shadow-md rounded-3xl p-8 flex flex-col gap-8">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="amount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-left flex justify-start">
+                      Amount of PEAQ to stake
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="0.00"
+                        {...field}
+                        onChange={updateAmount}
+                        value={stakedAmount}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {chainId !== VALID_CHAIN_ID ? (
+                <Button
+                  onClick={switchNetwork}
+                  className="w-full"
+                  size="lg"
+                  disabled={isSwitchingNetwork}
+                >
+                  {isSwitchingNetwork ? 'Switching...' : 'Switch to PEAQ'}
+                </Button>
+              ) : (
+                <Button
+                  className="w-full"
+                  type="submit"
+                  size="lg"
+                  disabled={isStaking}
+                >
+                  {isStaking ? 'Staking...' : 'Stake'}
+                </Button>
               )}
-            />
-            {!user ? (
-              <Button onClick={login} className="w-full" size="lg">
-                Connect Wallet
-              </Button>
-            ) : chainId !== VALID_CHAIN_ID ? (
-              <Button
-                onClick={switchNetwork}
-                className="w-full"
-                size="lg"
-                disabled={isSwitchingNetwork}
-              >
-                {isSwitchingNetwork ? 'Switching...' : 'Switch to PEAQ'}
-              </Button>
-            ) : (
-              <Button
-                className="w-full"
-                type="submit"
-                size="lg"
-                disabled={isStaking}
-              >
-                {isStaking ? 'Staking...' : 'Stake'}
-              </Button>
-            )}
-          </form>
-        </Form>
-        <div className="flex flex-col gap-2 text-xs">
-          <div className="flex justify-between">
-            <div>You will receive</div>
-            <div>{stakedAmount} stPEAQ</div>
-          </div>
-          <div className="flex justify-between">
-            <div>Exchange rate</div>
-            <div>1 PEAQ = 1 stPEAQ</div>
-          </div>
-          <div className="flex justify-between">
-            <div>Reward fee</div>
-            <div>10%</div>
+            </form>
+          </Form>
+          <div className="flex flex-col gap-2 text-xs">
+            <div className="flex justify-between">
+              <div>You will receive</div>
+              <div>{stakedAmount} stPEAQ</div>
+            </div>
+            <div className="flex justify-between">
+              <div>Exchange rate</div>
+              <div>1 PEAQ = 1 stPEAQ</div>
+            </div>
+            <div className="flex justify-between">
+              <div>Reward fee</div>
+              <div>10%</div>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
