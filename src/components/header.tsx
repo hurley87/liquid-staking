@@ -23,10 +23,10 @@ export const Header = () => {
         {!ready ? null : user ? (
           <DropdownMenu>
             <DropdownMenuTrigger>
-              <Button variant="ghost">
+              <span className="text-sm">
                 {address.slice(0, 6)}...
                 {address.slice(-4)}
-              </Button>
+              </span>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               {/* <DropdownMenuItem asChild>
