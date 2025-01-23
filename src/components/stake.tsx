@@ -49,7 +49,7 @@ export const Stake = () => {
   const wallet = wallets[0];
   const chainId = wallet?.chainId?.split(':')[1];
   const [stakedAmount, setStakedAmount] = useState('0');
-  const { balance } = useBalance(address);
+  const { balance, setBalance } = useBalance(address);
 
   if (!ready) return null;
 
@@ -83,6 +83,9 @@ export const Stake = () => {
       toast.success(`Staked ${values.amount} PEAQ`);
 
       setIsStaking(false);
+      setBalance(
+        (parseFloat(balance) + parseFloat(values.amount) * 1e18).toFixed(3)
+      );
     } catch (e) {
       console.log(e);
       setIsStaking(false);
@@ -95,8 +98,12 @@ export const Stake = () => {
     setIsSwitchingNetwork(false);
   };
 
-  const updateAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setStakedAmount(e.target.value);
+  const handleAmountChange = (value: string) => {
+    if (!value || isNaN(parseFloat(value))) {
+      setStakedAmount('0');
+      return;
+    }
+    setStakedAmount(parseFloat(value).toFixed(3));
   };
 
   return (
@@ -135,8 +142,10 @@ export const Stake = () => {
                       <Input
                         placeholder="0.00"
                         {...field}
-                        onChange={updateAmount}
-                        value={stakedAmount}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          handleAmountChange(e.target.value);
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
