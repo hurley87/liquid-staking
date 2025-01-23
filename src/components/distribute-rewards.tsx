@@ -20,7 +20,7 @@ import { publicClient } from '@/lib/publicClient';
 import { liquidStakingAbi } from '@/lib/LiquidStaking';
 import { liquidStakingAddress } from '@/lib/LiquidStaking';
 import { toast } from 'sonner';
-import { useBalance } from '@/hooks/useBalance';
+import { useGetTotalStaked } from '@/hooks/useGetTotalStaked';
 
 const VALID_CHAIN_ID = '84532';
 
@@ -49,7 +49,7 @@ export const DistributeRewards = () => {
   const wallet = wallets[0];
   const chainId = wallet?.chainId?.split(':')[1];
   const [stakedAmount, setStakedAmount] = useState('0');
-  const { balance, setBalance } = useBalance(address);
+  const { totalStaked, setTotalStaked } = useGetTotalStaked();
 
   if (!ready) return null;
 
@@ -83,8 +83,8 @@ export const DistributeRewards = () => {
       toast.success(`Staked ${values.amount} PEAQ`);
 
       setIsStaking(false);
-      setBalance(
-        (parseFloat(balance) + parseFloat(values.amount) * 1e18).toFixed(3)
+      setTotalStaked(
+        (parseFloat(totalStaked) + parseFloat(values.amount) * 1e18).toFixed(3)
       );
     } catch (e) {
       console.log(e);
@@ -113,7 +113,7 @@ export const DistributeRewards = () => {
         <div className="w-full flex flex-col text-center">
           <div className="text-xs">Total staked PEAQ</div>
           <div className="text-xl font-bold">
-            {(parseFloat(balance) / 1e18).toFixed(3)} stPEAQ
+            {(parseFloat(totalStaked) / 1e18).toFixed(3)} stPEAQ
           </div>
         </div>
         {/* <div className="w-full flex flex-col text-left">
