@@ -57,7 +57,7 @@ export const Stake = () => {
     setIsStaking(true);
 
     try {
-      const ethereumProvider = (await wallet?.getEthereumProvider()) as any;
+      const ethereumProvider = await wallet?.getEthereumProvider();
 
       const walletClient = await createWalletClient({
         account: address,
@@ -65,7 +65,7 @@ export const Stake = () => {
         transport: custom(ethereumProvider),
       });
 
-      const { request }: any = await publicClient.simulateContract({
+      const { request } = await publicClient.simulateContract({
         address: liquidStakingAddress,
         abi: liquidStakingAbi,
         functionName: 'deposit',
@@ -100,18 +100,18 @@ export const Stake = () => {
   };
 
   return (
-    <div className="w-full max-w-lg mx-auto border shadow-md rounded-3rxl">
+    <div className="w-full max-w-lg mx-auto border shadow-md rounded-3xl">
       <div className="flex p-8">
-        <div className="w-full flex flex-col text-left">
+        <div className="w-full flex flex-col text-center">
           <div className="text-xs">Staked amount</div>
           <div className="text-xl font-bold">
             {(parseFloat(balance) / 1e18).toFixed(3)} stPEAQ
           </div>
         </div>
-        <div className="w-full flex flex-col text-left">
+        {/* <div className="w-full flex flex-col text-left">
           <div className="text-xs">APR</div>
           <div className="text-xl font-bold">3.1%</div>
-        </div>
+        </div> */}
       </div>
       <div className="w-full max-w-lg mx-auto border shadow-md rounded-3xl p-8 flex flex-col gap-8">
         <Form {...form}>
@@ -122,7 +122,7 @@ export const Stake = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-left flex justify-start">
-                    Amount
+                    Amount of PEAQ to stake
                   </FormLabel>
                   <FormControl>
                     <Input
