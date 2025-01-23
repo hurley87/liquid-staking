@@ -36,7 +36,7 @@ const defaultValues: Partial<AccountFormValues> = {
   amount: '',
 };
 
-export const Stake = () => {
+export const DistributeRewards = () => {
   const { user, login, ready } = usePrivy();
   const address = user?.wallet?.address as `0x${string}`;
   const [isStaking, setIsStaking] = useState(false);
@@ -68,7 +68,7 @@ export const Stake = () => {
       const { request } = await publicClient.simulateContract({
         address: liquidStakingAddress,
         abi: liquidStakingAbi,
-        functionName: 'deposit',
+        functionName: 'distributeRewards',
         args: [],
         account: address,
         value: BigInt(Math.floor(parseFloat(values.amount) * 1e18)),
@@ -88,7 +88,7 @@ export const Stake = () => {
       );
     } catch (e) {
       console.log(e);
-      toast.error('Error staking');
+      toast.error('Error distributing rewards');
       setIsStaking(false);
     }
   };
@@ -111,7 +111,7 @@ export const Stake = () => {
     <div className="w-full max-w-lg mx-auto border shadow-md rounded-3xl">
       <div className="flex p-8">
         <div className="w-full flex flex-col text-center">
-          <div className="text-xs">Staked amount</div>
+          <div className="text-xs">Total staked PEAQ</div>
           <div className="text-xl font-bold">
             {(parseFloat(balance) / 1e18).toFixed(3)} stPEAQ
           </div>
@@ -137,7 +137,7 @@ export const Stake = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-left flex justify-start">
-                      Amount of PEAQ to stake
+                      Amount of PEAQ to distribute
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -169,23 +169,19 @@ export const Stake = () => {
                   size="lg"
                   disabled={isStaking}
                 >
-                  {isStaking ? 'Staking...' : 'Stake'}
+                  {isStaking ? 'Distributing...' : 'Distribute'}
                 </Button>
               )}
             </form>
           </Form>
           <div className="flex flex-col gap-2 text-xs">
             <div className="flex justify-between">
-              <div>You will receive</div>
-              <div>{stakedAmount} stPEAQ</div>
+              <div>Distribution amount</div>
+              <div>{stakedAmount} PEAQ</div>
             </div>
             <div className="flex justify-between">
-              <div>Exchange rate</div>
-              <div>1 PEAQ = 1 stPEAQ</div>
-            </div>
-            <div className="flex justify-between">
-              <div>Reward fee</div>
-              <div>10%</div>
+              <div>Earned PEAQ</div>
+              <div>{(parseFloat(stakedAmount) / 10).toFixed(3)} PEAQ</div>
             </div>
           </div>
         </div>
