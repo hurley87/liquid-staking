@@ -1,7 +1,6 @@
 'use client';
 import { usePrivy, useWallets } from '@privy-io/react-auth';
 import { Button } from '@/components/ui/button';
-import { z } from 'zod';
 import { useState, useEffect } from 'react';
 import { createWalletClient, custom } from 'viem';
 import { baseSepolia } from 'viem/chains';
@@ -12,18 +11,6 @@ import { toast } from 'sonner';
 import { useBalance } from '@/hooks/useBalance';
 
 const VALID_CHAIN_ID = '84532';
-
-const accountFormSchema = z.object({
-  amount: z.string().min(1, {
-    message: 'Amount must be at least 1 character.',
-  }),
-});
-
-type AccountFormValues = z.infer<typeof accountFormSchema>;
-
-const defaultValues: Partial<AccountFormValues> = {
-  amount: '',
-};
 
 export const WithdrawalsClaim = () => {
   const { user, login, ready } = usePrivy();
@@ -37,7 +24,7 @@ export const WithdrawalsClaim = () => {
   const { wallets } = useWallets();
   const wallet = wallets[0];
   const chainId = wallet?.chainId?.split(':')[1];
-  const { balance, setBalance } = useBalance(address);
+  const { balance } = useBalance(address);
 
   const fetchWithdrawalRequests = async () => {
     if (!address) return;
