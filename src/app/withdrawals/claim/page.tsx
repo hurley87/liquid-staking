@@ -1,5 +1,10 @@
 import { WithdrawalsLayout } from '@/components/withdrawals/withdrawals-layout';
+import { WithdrawalsClaim } from '@/components/withdrawals/withdrawals-claim';
 
 export default function ClaimWithdrawalPage() {
-  return <WithdrawalsLayout defaultTab="claim">claim layout</WithdrawalsLayout>;
+  return (
+    <WithdrawalsLayout defaultTab="claim">
+      <WithdrawalsClaim />
+    </WithdrawalsLayout>
+  );
 }

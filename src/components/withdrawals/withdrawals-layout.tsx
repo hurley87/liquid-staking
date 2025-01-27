@@ -32,7 +32,7 @@ export function WithdrawalsLayout({
             </TabsTrigger>
           </Link>
         </TabsList>
-        <div className="w-full">{children}</div>
+        <div className="w-full p-4">{children}</div>
       </Tabs>
     </div>
   );
