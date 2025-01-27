@@ -30,6 +30,11 @@ export const Header = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem asChild>
+                <Link className="cursor-pointer" href="/">
+                  Stake
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Link className="cursor-pointer" href="/withdrawals/request">
                   Withdrawals
                 </Link>
