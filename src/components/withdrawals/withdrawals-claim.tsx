@@ -40,7 +40,7 @@ export const WithdrawalsClaim = () => {
       setWithdrawalRequests(requests);
 
       // Check which requests are claimable
-      const claimablePromises = requests.map((_: any, index: number) =>
+      const claimablePromises = requests.map((_, index) =>
         publicClient.readContract({
           address: liquidStakingAddress,
           abi: liquidStakingAbi,
