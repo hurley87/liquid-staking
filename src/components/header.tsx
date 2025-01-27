@@ -29,16 +29,11 @@ export const Header = () => {
               </span>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {/* <DropdownMenuItem asChild>
-                <Link className="cursor-pointer" href="/">
-                  Register Name
+              <DropdownMenuItem asChild>
+                <Link className="cursor-pointer" href="/withdrawals/request">
+                  Withdrawals
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link className="cursor-pointer" href={`/profile/${address}`}>
-                  Profile
-                </Link>
-              </DropdownMenuItem> */}
               <DropdownMenuItem className="cursor-pointer" onSelect={logout}>
                 Disconnect
               </DropdownMenuItem>
