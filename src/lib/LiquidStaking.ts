@@ -1,5 +1,5 @@
 export const liquidStakingAddress =
-  '0xC27613D0eC13FDEB198BB0C962AA9aDb09B827CF';
+  '0xDB6609DAdD72c09A4D9D063DA829246df40933Ce';
 
 export const liquidStakingAbi = [
   {
@@ -49,6 +49,25 @@ export const liquidStakingAbi = [
     inputs: [],
     name: 'ReentrancyGuardReentrantCall',
     type: 'error',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'collator',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'bool',
+        name: 'status',
+        type: 'bool',
+      },
+    ],
+    name: 'CollatorWhitelisted',
+    type: 'event',
   },
   {
     anonymous: false,
@@ -187,6 +206,44 @@ export const liquidStakingAbi = [
       },
     ],
     name: 'ProtocolFeeUpdated',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'user',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
+      },
+    ],
+    name: 'Staked',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'collator',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
+      },
+    ],
+    name: 'StakedPEAQWithdrawn',
     type: 'event',
   },
   {
@@ -360,6 +417,19 @@ export const liquidStakingAbi = [
   },
   {
     inputs: [],
+    name: 'getAvailablePEAQForDelegation',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
     name: 'getExchangeRate',
     outputs: [
       {
@@ -382,6 +452,19 @@ export const liquidStakingAbi = [
       },
     ],
     stateMutability: 'pure',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'getPEAQWithCollators',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
     type: 'function',
   },
   {
@@ -560,6 +643,24 @@ export const liquidStakingAbi = [
     inputs: [
       {
         internalType: 'address',
+        name: 'collator',
+        type: 'address',
+      },
+      {
+        internalType: 'bool',
+        name: 'status',
+        type: 'bool',
+      },
+    ],
+    name: 'setCollatorWhitelist',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
         name: 'newCollector',
         type: 'address',
       },
@@ -636,6 +737,19 @@ export const liquidStakingAbi = [
   },
   {
     inputs: [],
+    name: 'totalPEAQWithCollators',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
     name: 'totalStakedPEAQ',
     outputs: [
       {
@@ -663,6 +777,43 @@ export const liquidStakingAbi = [
   {
     inputs: [],
     name: 'unpause',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    name: 'whitelistedCollators',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
+      },
+      {
+        internalType: 'address',
+        name: 'collator',
+        type: 'address',
+      },
+    ],
+    name: 'withdrawStakedPEAQ',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
