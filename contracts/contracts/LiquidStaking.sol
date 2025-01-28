@@ -46,6 +46,11 @@ contract LiquidStaking is Ownable, Pausable, ReentrancyGuard {
         uint256 date, // Day timestamp
         uint256 totalReward // Total reward distributed
     );  
+    event StakedPEAQWithdrawn(address indexed collator, uint256 amount);
+    event CollatorWhitelisted(address indexed collator, bool status);
+
+    mapping(address => bool) public whitelistedCollators;
+    uint256 public totalPEAQWithCollators;
 
     constructor(address _stPEAQ) Ownable(msg.sender) {
         stPeaqToken = IstPEAQ(_stPEAQ);
@@ -160,10 +165,10 @@ contract LiquidStaking is Ownable, Pausable, ReentrancyGuard {
             emit FeesCollected(feeAmount, feeCollector);
         }
 
-        // Increase the total staked amount to reflect rewards
+        // Update total staked PEAQ to include new rewards
         totalStakedPEAQ += rewardAmount;
 
-        // Trigger a rebase in the stPEAQ contract
+        // Trigger rebase in the stPEAQ contract to reflect new total
         stPeaqToken.rebase(totalStakedPEAQ);
 
         emit GlobalRewardLogged(block.timestamp, rewardAmount);
@@ -276,5 +281,51 @@ contract LiquidStaking is Ownable, Pausable, ReentrancyGuard {
             return false;
         }
         return block.timestamp >= withdrawalRequests[user][index].unlockTime;
+    }
+
+    /// @notice Withdraws staked PEAQ to a collator for delegation
+    /// @param amount Amount of PEAQ to withdraw
+    /// @param collator Address of the collator to delegate to
+    /// @dev Can only be called by the contract owner
+    function withdrawStakedPEAQ(uint256 amount, address collator) 
+        external 
+        onlyOwner 
+        nonReentrant 
+        whenNotPaused 
+    {
+        require(whitelistedCollators[collator], "Collator not whitelisted");
+        require(amount <= address(this).balance, "Insufficient contract balance");
+        require(amount <= totalStakedPEAQ - totalPEAQWithCollators, "Exceeds available PEAQ");
+        
+        totalPEAQWithCollators += amount;
+        
+        // Transfer PEAQ to the collator
+        payable(collator).transfer(amount);
+        
+        emit StakedPEAQWithdrawn(collator, amount);
+    }
+
+    /// @notice Manages the whitelist status of collators
+    /// @param collator Address of the collator
+    /// @param status True to whitelist, false to remove
+    function setCollatorWhitelist(address collator, bool status) 
+        external 
+        onlyOwner 
+    {
+        require(collator != address(0), "Invalid collator address");
+        whitelistedCollators[collator] = status;
+        emit CollatorWhitelisted(collator, status);
+    }
+
+    /// @notice Returns the amount of PEAQ currently delegated to collators
+    /// @return uint256 Amount of PEAQ with collators
+    function getPEAQWithCollators() external view returns (uint256) {
+        return totalPEAQWithCollators;
+    }
+
+    /// @notice Returns the amount of PEAQ available for delegation
+    /// @return uint256 Amount of PEAQ available
+    function getAvailablePEAQForDelegation() external view returns (uint256) {
+        return totalStakedPEAQ - totalPEAQWithCollators;
     }
 }
