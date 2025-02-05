@@ -26,7 +26,7 @@ export const WithdrawalsClaim = () => {
   const chainId = wallet?.chainId?.split(':')[1];
   const { balance } = useBalance(address);
 
-  const fetchWithdrawalRequests = async () => {
+  const fetchWithdrawalRequests = async (address: `0x${string}`) => {
     if (!address) return;
 
     try {
@@ -58,7 +58,7 @@ export const WithdrawalsClaim = () => {
   };
 
   useEffect(() => {
-    fetchWithdrawalRequests();
+    fetchWithdrawalRequests(address);
   }, [address]);
 
   const handleClaim = async (index: number) => {
@@ -88,7 +88,7 @@ export const WithdrawalsClaim = () => {
       });
 
       toast.success('Successfully claimed withdrawal');
-      fetchWithdrawalRequests();
+      fetchWithdrawalRequests(address);
     } catch (e) {
       console.error('Error claiming withdrawal:', e);
       toast.error('Error claiming withdrawal');
