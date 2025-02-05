@@ -81,17 +81,23 @@ contract stPEAQ is ERC20, ERC20Permit, Ownable, Pausable {
     function burn(address from, uint256 amount) external onlyStakingContract whenNotPaused {
         uint256 scaledAmount = (amount * 1e18) / _scalingFactor;
         _burn(from, scaledAmount);
-        _totalUnderlying -= amount;
+        // Ensure _totalUnderlying doesn't go below the minimum required for rebasing
+        if (amount >= _totalUnderlying) {
+            _totalUnderlying = 1; // Keep minimal value to allow future rebasing
+        } else {
+            _totalUnderlying -= amount;
+        }
     }
 
     /**
      * @notice Performs a rebase operation to adjust token balances
      * @dev Only callable by the staking contract
-     * @param newTotalUnderlying New total amount of underlying tokens (must be greater than current total)
+     * @param newTotalUnderlying New total amount of underlying tokens
      */
     function rebase(uint256 newTotalUnderlying) external onlyStakingContract {
-        require(newTotalUnderlying > _totalUnderlying, "Rebase must increase value");
         require(totalSupply() > 0, "Cannot rebase with zero supply");
+        require(newTotalUnderlying > 0, "New total must be positive");
+        // Remove the strict increase requirement
         _scalingFactor = (newTotalUnderlying * 1e18) / totalSupply();
         _totalUnderlying = newTotalUnderlying;
     }

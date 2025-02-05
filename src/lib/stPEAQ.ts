@@ -1,4 +1,4 @@
-export const stPEAQAddress = '0x9bAe30263591A118b80DA03cF65F3409CDbccCc9';
+export const stPEAQAddress = '0xd8b8a613EC56Be142f945DFe7C424F59e91b82Cf';
 
 export const stPEAQAbi = [
   {

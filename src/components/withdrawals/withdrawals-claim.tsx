@@ -116,13 +116,13 @@ export const WithdrawalsClaim = () => {
         </div>
       </div>
       {!user ? (
-        <div className="w-full max-w-lg mx-auto border shadow-md rounded-3xl p-8 flex flex-col gap-8">
+        <div className="w-full max-w-lg mx-auto border rounded-b-3xl p-8 flex flex-col gap-8">
           <Button onClick={login} className="w-full" size="lg">
             Connect Wallet
           </Button>
         </div>
       ) : (
-        <div className="w-full max-w-lg mx-auto border shadow-md rounded-3xl p-8 flex flex-col gap-8">
+        <div className="w-full max-w-lg mx-auto border rounded-b-3xl p-8 flex flex-col gap-8">
           {withdrawalRequests.length === 0 ? (
             <div className="text-center text-gray-500">
               No withdrawal requests found
