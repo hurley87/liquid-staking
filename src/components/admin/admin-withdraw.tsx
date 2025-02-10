@@ -20,7 +20,7 @@ import { publicClient } from '@/lib/publicClient';
 import { liquidStakingAbi } from '@/lib/LiquidStaking';
 import { liquidStakingAddress } from '@/lib/LiquidStaking';
 import { toast } from 'sonner';
-import { useGetTotalStaked } from '@/hooks/useGetTotalStaked';
+import { useGetAvailablePEAQ } from '@/hooks/useGetAvailablePEAQ';
 
 const VALID_CHAIN_ID = '84532';
 
@@ -53,7 +53,7 @@ export const AdminWithdraw = () => {
   const wallet = wallets[0];
   const chainId = wallet?.chainId?.split(':')[1];
   const [withdrawAmount, setWithdrawAmount] = useState('0');
-  const { totalStaked } = useGetTotalStaked();
+  const { availablePEAQ } = useGetAvailablePEAQ();
 
   if (!ready) return null;
 
@@ -114,9 +114,9 @@ export const AdminWithdraw = () => {
     <div className="w-full max-w-lg mx-auto border shadow-md rounded-3xl">
       <div className="flex p-8">
         <div className="w-full flex flex-col text-center">
-          <div className="text-xs">Total staked PEAQ</div>
+          <div className="text-xs">Available PEAQ for delegation</div>
           <div className="text-xl font-bold">
-            {(parseFloat(totalStaked) / 1e18).toFixed(3)} PEAQ
+            {(parseFloat(availablePEAQ) / 1e18).toFixed(3)} PEAQ
           </div>
         </div>
       </div>
