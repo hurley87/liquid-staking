@@ -53,7 +53,7 @@ export const AdminWithdraw = () => {
   const wallet = wallets[0];
   const chainId = wallet?.chainId?.split(':')[1];
   const [withdrawAmount, setWithdrawAmount] = useState('0');
-  const { availablePEAQ } = useGetAvailablePEAQ();
+  const { availablePEAQ, refetch } = useGetAvailablePEAQ();
 
   if (!ready) return null;
 
@@ -86,7 +86,8 @@ export const AdminWithdraw = () => {
         hash,
       });
 
-      toast.success(`Withdrawn ${values.amount} PEAQ`);
+      toast.success(`${values.amount} PEAQ withdrawn`);
+      await refetch();
       setIsWithdrawing(false);
       form.reset();
     } catch (e) {

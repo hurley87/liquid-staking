@@ -5,25 +5,25 @@ import { liquidStakingAbi, liquidStakingAddress } from '@/lib/LiquidStaking';
 export function useGetAvailablePEAQ() {
   const [availablePEAQ, setAvailablePEAQ] = useState<string>('0');
 
-  useEffect(() => {
-    const fetchAvailablePEAQ = async () => {
-      try {
-        const available = await publicClient.readContract({
-          address: liquidStakingAddress,
-          abi: liquidStakingAbi,
-          functionName: 'getAvailablePEAQForDelegation',
-        });
+  const fetchAvailablePEAQ = async () => {
+    try {
+      const available = await publicClient.readContract({
+        address: liquidStakingAddress,
+        abi: liquidStakingAbi,
+        functionName: 'getAvailablePEAQForDelegation',
+      });
 
-        if (available) {
-          setAvailablePEAQ(available?.toString());
-        }
-      } catch (error) {
-        console.error('Error fetching available PEAQ:', error);
+      if (available) {
+        setAvailablePEAQ(available?.toString());
       }
-    };
+    } catch (error) {
+      console.error('Error fetching available PEAQ:', error);
+    }
+  };
 
+  useEffect(() => {
     fetchAvailablePEAQ();
   }, []);
 
-  return { availablePEAQ, setAvailablePEAQ };
+  return { availablePEAQ, setAvailablePEAQ, refetch: fetchAvailablePEAQ };
 }
