@@ -4,7 +4,7 @@ import { type ReactNode } from 'react';
 
 interface AdminLayoutProps {
   children: ReactNode;
-  defaultTab: 'withdraw' | 'distribute' | 'whitelist';
+  defaultTab: 'withdraw' | 'distribute';
 }
 
 export function AdminLayout({ children, defaultTab }: AdminLayoutProps) {
@@ -18,11 +18,6 @@ export function AdminLayout({ children, defaultTab }: AdminLayoutProps) {
       </div>
       <Tabs defaultValue={defaultTab} className="w-full">
         <TabsList className="w-full max-w-md">
-          <Link href="/admin/whitelist" className="w-full">
-            <TabsTrigger value="whitelist" className="w-full">
-              Whitelist
-            </TabsTrigger>
-          </Link>
           <Link href="/admin/withdraw" className="w-full">
             <TabsTrigger value="withdraw" className="w-full">
               Withdraw

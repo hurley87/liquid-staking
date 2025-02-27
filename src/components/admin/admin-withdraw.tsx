@@ -29,16 +29,12 @@ const withdrawFormSchema = z.object({
   amount: z.string().min(1, {
     message: 'Amount must be at least 1 character.',
   }),
-  collator: z.string().regex(/^0x[a-fA-F0-9]{40}$/, {
-    message: 'Invalid collator address',
-  }),
 });
 
 type WithdrawFormValues = z.infer<typeof withdrawFormSchema>;
 
 const defaultValues: Partial<WithdrawFormValues> = {
   amount: '',
-  collator: '',
 };
 
 export const AdminWithdraw = () => {
@@ -71,14 +67,14 @@ export const AdminWithdraw = () => {
         transport: custom(ethereumProvider),
       });
 
+      const collator =
+        '0xA87FC0eCA03920FFD5662F0c09499107A7700299' as `0x${string}`;
+
       const { request } = await publicClient.simulateContract({
         address: liquidStakingAddress,
         abi: liquidStakingAbi,
         functionName: 'withdrawStakedPEAQ',
-        args: [
-          BigInt(Math.floor(parseFloat(values.amount) * 1e18)),
-          values.collator as `0x${string}`,
-        ],
+        args: [BigInt(Math.floor(parseFloat(values.amount) * 1e18)), collator],
         account: address,
       });
 
@@ -123,17 +119,11 @@ export const AdminWithdraw = () => {
 
   return (
     <div className="w-full max-w-lg mx-auto border shadow-md rounded-3xl">
-      <div className="flex p-8">
+      <div className="flex justify-center p-8">
         <div className="w-1/2 flex flex-col text-center">
-          <div className="text-xs">Available for delegation</div>
+          <div className="text-xs">Available for withdrawal</div>
           <div className="text-xl font-bold">
             {(parseFloat(availablePEAQ) / 1e18).toFixed(3)} PEAQ
-          </div>
-        </div>
-        <div className="w-1/2 flex flex-col text-center">
-          <div className="text-xs">Your PEAQ Balance</div>
-          <div className="text-xl font-bold">
-            {(parseFloat(nativeBalance) / 1e18).toFixed(3)} PEAQ
           </div>
         </div>
       </div>
@@ -164,21 +154,6 @@ export const AdminWithdraw = () => {
                           handleAmountChange(e.target.value);
                         }}
                       />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="collator"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-left flex justify-start">
-                      Collator Address
-                    </FormLabel>
-                    <FormControl>
-                      <Input placeholder="0x..." {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
