@@ -108,6 +108,12 @@ export const WithdrawalsRequest = () => {
     setWithdrawalAmount(parseFloat(value).toFixed(3));
   };
 
+  const handleMaxAmount = () => {
+    const maxAmount = (parseFloat(balance) / 1e18).toFixed(3);
+    form.setValue('amount', maxAmount);
+    setWithdrawalAmount(maxAmount);
+  };
+
   return (
     <div className="w-full max-w-lg mx-auto border shadow-md rounded-3xl">
       <div className="flex p-8">
@@ -142,16 +148,27 @@ export const WithdrawalsRequest = () => {
                     <FormLabel className="text-left flex justify-start">
                       Amount of stPEAQ to withdraw
                     </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="0.00"
-                        {...field}
-                        onChange={(e) => {
-                          field.onChange(e);
-                          handleAmountChange(e.target.value);
-                        }}
-                      />
-                    </FormControl>
+                    <div className="flex gap-2 items-center">
+                      <FormControl>
+                        <Input
+                          placeholder="0.00"
+                          {...field}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            handleAmountChange(e.target.value);
+                          }}
+                        />
+                      </FormControl>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleMaxAmount}
+                        className="whitespace-nowrap p-4"
+                      >
+                        Max
+                      </Button>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
