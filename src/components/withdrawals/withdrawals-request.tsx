@@ -21,6 +21,7 @@ import { liquidStakingAbi } from '@/lib/LiquidStaking';
 import { liquidStakingAddress } from '@/lib/LiquidStaking';
 import { toast } from 'sonner';
 import { useBalance } from '@/hooks/useBalance';
+import { useNativeBalance } from '@/hooks/useNativeBalance';
 
 const VALID_CHAIN_ID = '84532';
 
@@ -50,6 +51,7 @@ export const WithdrawalsRequest = () => {
   const chainId = wallet?.chainId?.split(':')[1];
   const [withdrawalAmount, setWithdrawalAmount] = useState('0');
   const { balance, setBalance } = useBalance(address);
+  const { nativeBalance } = useNativeBalance(address);
 
   if (!ready) return null;
 
@@ -109,10 +111,16 @@ export const WithdrawalsRequest = () => {
   return (
     <div className="w-full max-w-lg mx-auto border shadow-md rounded-3xl">
       <div className="flex p-8">
-        <div className="w-full flex flex-col text-center">
+        <div className="w-1/2 flex flex-col text-center">
           <div className="text-xs">Available stPEAQ</div>
           <div className="text-xl font-bold">
             {(parseFloat(balance) / 1e18).toFixed(3)} stPEAQ
+          </div>
+        </div>
+        <div className="w-1/2 flex flex-col text-center">
+          <div className="text-xs">Current PEAQ</div>
+          <div className="text-xl font-bold">
+            {(parseFloat(nativeBalance) / 1e18).toFixed(3)} PEAQ
           </div>
         </div>
       </div>
@@ -162,7 +170,10 @@ export const WithdrawalsRequest = () => {
                   className="w-full"
                   type="submit"
                   size="lg"
-                  disabled={isRequesting}
+                  disabled={
+                    isRequesting ||
+                    parseFloat(balance) < parseFloat(withdrawalAmount) * 1e18
+                  }
                 >
                   {isRequesting ? 'Requesting...' : 'Request Withdrawal'}
                 </Button>

@@ -9,6 +9,7 @@ import { liquidStakingAbi } from '@/lib/LiquidStaking';
 import { liquidStakingAddress } from '@/lib/LiquidStaking';
 import { toast } from 'sonner';
 import { useBalance } from '@/hooks/useBalance';
+import { useNativeBalance } from '@/hooks/useNativeBalance';
 
 const VALID_CHAIN_ID = '84532';
 
@@ -25,6 +26,7 @@ export const WithdrawalsClaim = () => {
   const wallet = wallets[0];
   const chainId = wallet?.chainId?.split(':')[1];
   const { balance } = useBalance(address);
+  const { nativeBalance, setNativeBalance } = useNativeBalance(address);
 
   const fetchWithdrawalRequests = async (address: `0x${string}`) => {
     if (!address) return;
@@ -87,6 +89,10 @@ export const WithdrawalsClaim = () => {
         hash,
       });
 
+      // Update native balance after successful claim
+      const claimedAmount = withdrawalRequests[index].amount;
+      setNativeBalance((BigInt(nativeBalance) + claimedAmount).toString());
+
       toast.success('Successfully claimed withdrawal');
       fetchWithdrawalRequests(address);
     } catch (e) {
@@ -108,10 +114,16 @@ export const WithdrawalsClaim = () => {
   return (
     <div className="w-full max-w-lg mx-auto border shadow-md rounded-3xl">
       <div className="flex p-8">
-        <div className="w-full flex flex-col text-center">
+        <div className="w-1/2 flex flex-col text-center">
           <div className="text-xs">Available stPEAQ</div>
           <div className="text-xl font-bold">
             {(parseFloat(balance) / 1e18).toFixed(3)} stPEAQ
+          </div>
+        </div>
+        <div className="w-1/2 flex flex-col text-center">
+          <div className="text-xs">Current PEAQ</div>
+          <div className="text-xl font-bold">
+            {(parseFloat(nativeBalance) / 1e18).toFixed(3)} PEAQ
           </div>
         </div>
       </div>

@@ -21,6 +21,7 @@ import { liquidStakingAbi } from '@/lib/LiquidStaking';
 import { liquidStakingAddress } from '@/lib/LiquidStaking';
 import { toast } from 'sonner';
 import { useGetAvailablePEAQ } from '@/hooks/useGetAvailablePEAQ';
+import { useNativeBalance } from '@/hooks/useNativeBalance';
 
 const VALID_CHAIN_ID = '84532';
 
@@ -54,6 +55,7 @@ export const AdminWithdraw = () => {
   const chainId = wallet?.chainId?.split(':')[1];
   const [withdrawAmount, setWithdrawAmount] = useState('0');
   const { availablePEAQ, refetch } = useGetAvailablePEAQ();
+  const { nativeBalance, setNativeBalance } = useNativeBalance(address);
 
   if (!ready) return null;
 
@@ -90,6 +92,14 @@ export const AdminWithdraw = () => {
       await refetch();
       setIsWithdrawing(false);
       form.reset();
+
+      // Update native balance after successful withdrawal
+      setNativeBalance(
+        (
+          BigInt(nativeBalance) +
+          BigInt(Math.floor(parseFloat(values.amount) * 1e18))
+        ).toString()
+      );
     } catch (e) {
       console.error(e);
       toast.error('Error withdrawing PEAQ');
@@ -114,10 +124,16 @@ export const AdminWithdraw = () => {
   return (
     <div className="w-full max-w-lg mx-auto border shadow-md rounded-3xl">
       <div className="flex p-8">
-        <div className="w-full flex flex-col text-center">
-          <div className="text-xs">Available PEAQ for delegation</div>
+        <div className="w-1/2 flex flex-col text-center">
+          <div className="text-xs">Available for delegation</div>
           <div className="text-xl font-bold">
             {(parseFloat(availablePEAQ) / 1e18).toFixed(3)} PEAQ
+          </div>
+        </div>
+        <div className="w-1/2 flex flex-col text-center">
+          <div className="text-xs">Your PEAQ Balance</div>
+          <div className="text-xl font-bold">
+            {(parseFloat(nativeBalance) / 1e18).toFixed(3)} PEAQ
           </div>
         </div>
       </div>
@@ -182,7 +198,11 @@ export const AdminWithdraw = () => {
                   className="w-full"
                   type="submit"
                   size="lg"
-                  disabled={isWithdrawing}
+                  disabled={
+                    isWithdrawing ||
+                    parseFloat(availablePEAQ) <
+                      parseFloat(withdrawAmount) * 1e18
+                  }
                 >
                   {isWithdrawing ? 'Withdrawing...' : 'Withdraw'}
                 </Button>

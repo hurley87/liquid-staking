@@ -21,6 +21,7 @@ import { liquidStakingAbi } from '@/lib/LiquidStaking';
 import { liquidStakingAddress } from '@/lib/LiquidStaking';
 import { toast } from 'sonner';
 import { useBalance } from '@/hooks/useBalance';
+import { useNativeBalance } from '@/hooks/useNativeBalance';
 
 const VALID_CHAIN_ID = '84532';
 
@@ -50,6 +51,7 @@ export const Stake = () => {
   const chainId = wallet?.chainId?.split(':')[1];
   const [stakedAmount, setStakedAmount] = useState('0');
   const { balance, setBalance } = useBalance(address);
+  const { nativeBalance, setNativeBalance } = useNativeBalance(address);
 
   if (!ready) return null;
 
@@ -86,6 +88,12 @@ export const Stake = () => {
       setBalance(
         (parseFloat(balance) + parseFloat(values.amount) * 1e18).toFixed(3)
       );
+      setNativeBalance(
+        (
+          BigInt(nativeBalance) -
+          BigInt(Math.floor(parseFloat(values.amount) * 1e18))
+        ).toString()
+      );
     } catch (e) {
       console.log(e);
       toast.error('Error staking');
@@ -110,16 +118,18 @@ export const Stake = () => {
   return (
     <div className="w-full max-w-lg mx-auto border shadow-md rounded-3xl">
       <div className="flex p-8">
-        <div className="w-full flex flex-col text-center">
+        <div className="w-1/2 flex flex-col text-center">
           <div className="text-xs">Staked amount</div>
           <div className="text-xl font-bold">
             {(parseFloat(balance) / 1e18).toFixed(3)} stPEAQ
           </div>
         </div>
-        {/* <div className="w-full flex flex-col text-left">
-          <div className="text-xs">APR</div>
-          <div className="text-xl font-bold">3.1%</div>
-        </div> */}
+        <div className="w-1/2 flex flex-col text-center">
+          <div className="text-xs">Available PEAQ</div>
+          <div className="text-xl font-bold">
+            {(parseFloat(nativeBalance) / 1e18).toFixed(3)} PEAQ
+          </div>
+        </div>
       </div>
       {!user ? (
         <div className="w-full max-w-lg mx-auto border rounded-b-3xl p-8 flex flex-col gap-8">
@@ -167,7 +177,10 @@ export const Stake = () => {
                   className="w-full"
                   type="submit"
                   size="lg"
-                  disabled={isStaking}
+                  disabled={
+                    isStaking ||
+                    parseFloat(nativeBalance) < parseFloat(stakedAmount) * 1e18
+                  }
                 >
                   {isStaking ? 'Staking...' : 'Stake'}
                 </Button>
