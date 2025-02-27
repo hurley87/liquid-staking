@@ -198,7 +198,7 @@ export const Stake = () => {
             </div>
             <div className="flex justify-between">
               <div>Reward fee</div>
-              <div>10%</div>
+              <div>5%</div>
             </div>
           </div>
         </div>

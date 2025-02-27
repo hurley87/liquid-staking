@@ -184,7 +184,7 @@ export const DistributeRewards = () => {
             </div>
             <div className="flex justify-between">
               <div>Earned PEAQ</div>
-              <div>{(parseFloat(stakedAmount) / 10).toFixed(3)} PEAQ</div>
+              <div>{(parseFloat(stakedAmount) * 0.05).toFixed(3)} PEAQ</div>
             </div>
           </div>
         </div>
