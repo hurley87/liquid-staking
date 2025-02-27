@@ -1,7 +1,7 @@
 import { createPublicClient, http } from 'viem';
-import { baseSepolia } from 'viem/chains';
+import { peaqChain, DEFAULT_RPC_URL } from './chain';
 
 export const publicClient = createPublicClient({
-  chain: baseSepolia,
-  transport: http('https://sepolia.base.org'),
+  chain: peaqChain,
+  transport: http(DEFAULT_RPC_URL),
 });

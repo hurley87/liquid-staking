@@ -15,14 +15,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { createWalletClient, custom } from 'viem';
-import { baseSepolia } from 'viem/chains';
 import { publicClient } from '@/lib/publicClient';
 import { liquidStakingAbi } from '@/lib/LiquidStaking';
 import { liquidStakingAddress } from '@/lib/LiquidStaking';
 import { toast } from 'sonner';
 import { useNativeBalance } from '@/hooks/useNativeBalance';
-
-const VALID_CHAIN_ID = '84532';
+import { peaqChain, VALID_CHAIN_ID } from '@/lib/chain';
 
 const accountFormSchema = z.object({
   amount: z.string().min(1, {
@@ -61,7 +59,7 @@ export const DistributeRewards = () => {
 
       const walletClient = await createWalletClient({
         account: address,
-        chain: baseSepolia,
+        chain: peaqChain,
         transport: custom(ethereumProvider),
       });
 

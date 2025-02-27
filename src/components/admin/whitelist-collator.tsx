@@ -5,7 +5,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { usePrivy, useWallets } from '@privy-io/react-auth';
 import { createWalletClient, custom } from 'viem';
-import { baseSepolia } from 'viem/chains';
 import { publicClient } from '@/lib/publicClient';
 import { liquidStakingAbi, liquidStakingAddress } from '@/lib/LiquidStaking';
 import { Button } from '@/components/ui/button';
@@ -20,8 +19,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
-
-const VALID_CHAIN_ID = '84532';
+import { peaqChain, VALID_CHAIN_ID } from '@/lib/chain';
 
 const formSchema = z.object({
   collatorAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/, {
@@ -59,7 +57,7 @@ export function WhitelistCollator() {
 
       const walletClient = await createWalletClient({
         account: address,
-        chain: baseSepolia,
+        chain: peaqChain,
         transport: custom(ethereumProvider),
       });
 

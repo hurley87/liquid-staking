@@ -1,5 +1,5 @@
 export const liquidStakingAddress =
-  '0x238EC5d3a27DCC40933C64F80E7D203dC3B58B72';
+  '0x22Aa24ac612C80ac8403Be427240581936446C08';
 
 export const liquidStakingAbi = [
   {
