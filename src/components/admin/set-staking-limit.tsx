@@ -112,8 +112,6 @@ export function SetStakingLimit() {
         throw new Error('No wallet connected');
       }
 
-      // Using the wallet's ethereum provider to switch networks
-      // @ts-ignore - The Privy wallet interface might not match the expected type
       await wallet.switchChain(Number(VALID_CHAIN_ID));
 
       toast.success('Network switched successfully', {
