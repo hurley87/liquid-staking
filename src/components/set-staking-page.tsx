@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { usePrivy, useWallets } from '@privy-io/react-auth';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { peaqChain, VALID_CHAIN_ID } from '@/lib/chain';
+import { VALID_CHAIN_ID } from '@/lib/chain';
 import { liquidStakingAddress } from '@/lib/LiquidStaking';
 import { stPEAQAddress } from '@/lib/stPEAQ';
 

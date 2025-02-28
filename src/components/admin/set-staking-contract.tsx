@@ -3,12 +3,10 @@ import { useState } from 'react';
 import { usePrivy, useWallets } from '@privy-io/react-auth';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { peaqChain, VALID_CHAIN_ID } from '@/lib/chain';
-import { createWalletClient, custom } from 'viem';
+import { VALID_CHAIN_ID } from '@/lib/chain';
 
 export function SetStakingContract() {
   const { user, login, ready } = usePrivy();
-  const address = user?.wallet?.address as `0x${string}`;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSwitchingNetwork, setIsSwitchingNetwork] = useState(false);
   const { wallets } = useWallets();
