@@ -1,4 +1,3 @@
-import { AdminSettingsCard } from '@/components/admin/admin-settings-card';
 import { SetStakingButton } from '@/components/admin/set-staking-button';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
