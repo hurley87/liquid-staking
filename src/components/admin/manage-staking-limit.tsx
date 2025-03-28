@@ -39,7 +39,6 @@ export const ManageStakingLimit = () => {
   const [isSetting, setIsSetting] = useState(false);
   const [isSwitchingNetwork, setIsSwitchingNetwork] = useState(false);
   const [currentLimit, setCurrentLimit] = useState<string>('0');
-  const [totalStaked, setTotalStaked] = useState<string>('0');
   const form = useForm<StakingLimitFormValues>({
     resolver: zodResolver(stakingLimitFormSchema),
     defaultValues,
@@ -53,21 +52,13 @@ export const ManageStakingLimit = () => {
       if (!address) return;
 
       try {
-        const [limit, staked] = await Promise.all([
-          publicClient.readContract({
-            address: liquidStakingAddress,
-            abi: liquidStakingAbi,
-            functionName: 'stakingLimit',
-          }),
-          publicClient.readContract({
-            address: liquidStakingAddress,
-            abi: liquidStakingAbi,
-            functionName: 'getTotalStaked',
-          }),
-        ]);
+        const limit = await publicClient.readContract({
+          address: liquidStakingAddress,
+          abi: liquidStakingAbi,
+          functionName: 'stakingLimit',
+        });
 
         setCurrentLimit((Number(limit) / 1e18).toFixed(3));
-        setTotalStaked((Number(staked) / 1e18).toFixed(3));
       } catch (e) {
         console.error('Error fetching staking data:', e);
         toast.error('Error fetching staking data');
@@ -125,13 +116,9 @@ export const ManageStakingLimit = () => {
   return (
     <div className="w-full max-w-lg mx-auto border shadow-md rounded-3xl">
       <div className="flex p-8">
-        <div className="w-1/2 flex flex-col text-center">
+        <div className="w-full flex flex-col text-center">
           <div className="text-xs">Current Staking Limit</div>
           <div className="text-xl font-bold">{currentLimit} PEAQ</div>
-        </div>
-        <div className="w-1/2 flex flex-col text-center">
-          <div className="text-xs">Total Staked</div>
-          <div className="text-xl font-bold">{totalStaked} PEAQ</div>
         </div>
       </div>
       {!user ? (
