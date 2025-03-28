@@ -12,12 +12,9 @@ export default function AdminDashboardPage() {
           <p className="text-gray-500">Manage your liquid staking platform</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Settings Card */}
-          <AdminSettingsCard />
-
+        <div className="flex justify-center">
           {/* Quick Actions */}
-          <div className="flex flex-col gap-4 p-6 border rounded-lg shadow-sm bg-white">
+          <div className="flex flex-col gap-4 p-6 border rounded-lg shadow-sm bg-white w-full max-w-md">
             <div className="text-center">
               <h2 className="text-xl font-semibold mb-2">Quick Actions</h2>
               <p className="text-sm text-gray-500">
