@@ -23,13 +23,9 @@ import { useBalance } from '@/hooks/useBalance';
 import { useNativeBalance } from '@/hooks/useNativeBalance';
 import { peaqChain, VALID_CHAIN_ID } from '@/lib/chain';
 
-const accountFormSchema = z.object({
-  amount: z.string().min(1, {
-    message: 'Amount must be at least 1 character.',
-  }),
-});
-
-type AccountFormValues = z.infer<typeof accountFormSchema>;
+type AccountFormValues = {
+  amount: string;
+};
 
 const defaultValues: Partial<AccountFormValues> = {
   amount: '',
@@ -40,6 +36,30 @@ export const WithdrawalsRequest = () => {
   const address = user?.wallet?.address as `0x${string}`;
   const [isRequesting, setIsRequesting] = useState(false);
   const [isSwitchingNetwork, setIsSwitchingNetwork] = useState(false);
+  const { balance, setBalance } = useBalance(address);
+  const { nativeBalance } = useNativeBalance(address);
+
+  const accountFormSchema = z.object({
+    amount: z
+      .string()
+      .min(1, {
+        message: 'Amount must be at least 1 character.',
+      })
+      .refine((val: string) => !isNaN(parseFloat(val)), {
+        message: 'Please enter a valid number',
+      })
+      .refine(
+        (val: string) => {
+          const amount = parseFloat(val);
+          const maxAmount = parseFloat(balance) / 1e18;
+          return amount <= maxAmount;
+        },
+        {
+          message: 'Amount exceeds available balance',
+        }
+      ),
+  });
+
   const form = useForm<AccountFormValues>({
     resolver: zodResolver(accountFormSchema),
     defaultValues,
@@ -48,8 +68,6 @@ export const WithdrawalsRequest = () => {
   const wallet = wallets[0];
   const chainId = wallet?.chainId?.split(':')[1];
   const [withdrawalAmount, setWithdrawalAmount] = useState('0');
-  const { balance, setBalance } = useBalance(address);
-  const { nativeBalance } = useNativeBalance(address);
 
   if (!ready) return null;
 
@@ -103,12 +121,16 @@ export const WithdrawalsRequest = () => {
       setWithdrawalAmount('0');
       return;
     }
-    setWithdrawalAmount(parseFloat(value).toFixed(3));
+    const amount = parseFloat(value);
+    const maxAmount = parseFloat(balance) / 1e18;
+    const roundedAmount = Math.min(amount, maxAmount).toFixed(3);
+    setWithdrawalAmount(roundedAmount);
+    form.setValue('amount', roundedAmount, { shouldValidate: true });
   };
 
   const handleMaxAmount = () => {
     const maxAmount = (parseFloat(balance) / 1e18).toFixed(3);
-    form.setValue('amount', maxAmount);
+    form.setValue('amount', maxAmount, { shouldValidate: true });
     setWithdrawalAmount(maxAmount);
   };
 
