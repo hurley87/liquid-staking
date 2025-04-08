@@ -4,7 +4,7 @@ import { type ReactNode } from 'react';
 
 interface AdminLayoutProps {
   children: ReactNode;
-  defaultTab: 'withdraw' | 'distribute' | 'staking-limit';
+  defaultTab: 'withdraw' | 'distribute' | 'staking-limit' | 'withdrawal-delay';
 }
 
 export function AdminLayout({ children, defaultTab }: AdminLayoutProps) {
@@ -31,6 +31,11 @@ export function AdminLayout({ children, defaultTab }: AdminLayoutProps) {
           <Link href="/admin/staking-limit" className="w-full">
             <TabsTrigger value="staking-limit" className="w-full">
               Staking Limit
+            </TabsTrigger>
+          </Link>
+          <Link href="/admin/withdrawal-delay" className="w-full">
+            <TabsTrigger value="withdrawal-delay" className="w-full">
+              Withdrawal Delay
             </TabsTrigger>
           </Link>
         </TabsList>

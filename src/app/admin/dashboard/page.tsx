@@ -29,6 +29,11 @@ export default function AdminDashboardPage() {
               <Button asChild variant="outline" className="w-full">
                 <Link href="/admin/distribute">Distribute Rewards</Link>
               </Button>
+              <Button asChild variant="outline" className="w-full">
+                <Link href="/admin/withdrawal-delay">
+                  Manage Withdrawal Delay
+                </Link>
+              </Button>
             </div>
           </div>
         </div>
