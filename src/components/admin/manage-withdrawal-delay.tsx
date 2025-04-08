@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { usePrivy, useWallets } from '@privy-io/react-auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { VALID_CHAIN_ID } from '@/lib/chain';
 import { z } from 'zod';
