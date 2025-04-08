@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePrivy, useWallets } from '@privy-io/react-auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -55,6 +55,27 @@ export function ManageWithdrawalDelay() {
     resolver: zodResolver(withdrawalDelaySchema),
     defaultValues,
   });
+
+  useEffect(() => {
+    const fetchWithdrawalDelay = async () => {
+      try {
+        const delay = await publicClient.readContract({
+          address: liquidStakingAddress,
+          abi: liquidStakingAbi,
+          functionName: 'withdrawalDelay',
+        });
+        // Convert seconds to days
+        const days = Number(delay) / (24 * 60 * 60);
+        setCurrentDelay(days.toString());
+      } catch (error) {
+        console.error('Error fetching withdrawal delay:', error);
+      }
+    };
+
+    if (ready) {
+      fetchWithdrawalDelay();
+    }
+  }, [ready]);
 
   if (!ready) return null;
 
