@@ -25,10 +25,20 @@ interface GroupedWithdrawals {
 }
 
 interface TransferEvent {
+  eventName: 'Transfer';
   args: {
-    from?: string;
-    to?: string;
+    from: string;
+    to: string;
+    value: bigint;
   };
+  logIndex: number;
+  transactionIndex: number;
+  transactionHash: string;
+  blockHash: string;
+  blockNumber: bigint;
+  address: string;
+  topics: string[];
+  data: string;
 }
 
 export function useWithdrawals() {
