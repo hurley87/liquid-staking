@@ -122,11 +122,20 @@ export const WithdrawalsRequest = () => {
       form.setValue('amount', '0', { shouldValidate: true });
       return;
     }
-    const amount = parseFloat(value);
+
     const maxAmount = parseFloat(balance) / 1e18;
-    const safeAmount = Math.min(amount, maxAmount).toString();
-    setWithdrawalAmount(safeAmount);
-    form.setValue('amount', safeAmount, { shouldValidate: true });
+    const inputAmount = parseFloat(value);
+
+    // If the input amount is higher than max, use the max amount
+    if (inputAmount > maxAmount) {
+      setWithdrawalAmount(maxAmount.toString());
+      form.setValue('amount', maxAmount.toString(), { shouldValidate: true });
+      return;
+    }
+
+    // Otherwise use the input amount
+    setWithdrawalAmount(value);
+    form.setValue('amount', value, { shouldValidate: true });
   };
 
   const handleMaxAmount = () => {
