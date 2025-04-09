@@ -119,17 +119,18 @@ export const WithdrawalsRequest = () => {
   const handleAmountChange = (value: string) => {
     if (!value || isNaN(parseFloat(value))) {
       setWithdrawalAmount('0');
+      form.setValue('amount', '0', { shouldValidate: true });
       return;
     }
     const amount = parseFloat(value);
     const maxAmount = parseFloat(balance) / 1e18;
-    const roundedAmount = Math.min(amount, maxAmount).toFixed(3);
-    setWithdrawalAmount(roundedAmount);
-    form.setValue('amount', roundedAmount, { shouldValidate: true });
+    const safeAmount = Math.min(amount, maxAmount).toString();
+    setWithdrawalAmount(safeAmount);
+    form.setValue('amount', safeAmount, { shouldValidate: true });
   };
 
   const handleMaxAmount = () => {
-    const maxAmount = (parseFloat(balance) / 1e18).toFixed(3);
+    const maxAmount = (parseFloat(balance) / 1e18).toString();
     form.setValue('amount', maxAmount, { shouldValidate: true });
     setWithdrawalAmount(maxAmount);
   };
@@ -171,6 +172,8 @@ export const WithdrawalsRequest = () => {
                     <div className="flex gap-2 items-center">
                       <FormControl>
                         <Input
+                          type="number"
+                          step="any"
                           placeholder="0.00"
                           {...field}
                           onChange={(e) => {
