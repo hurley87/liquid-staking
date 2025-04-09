@@ -34,6 +34,11 @@ export default function AdminDashboardPage() {
                   Manage Withdrawal Delay
                 </Link>
               </Button>
+              <Button asChild variant="outline" className="w-full">
+                <Link href="/admin/withdrawal-tracking">
+                  Withdrawal Tracking
+                </Link>
+              </Button>
             </div>
           </div>
         </div>

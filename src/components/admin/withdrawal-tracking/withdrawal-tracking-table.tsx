@@ -1,40 +1,62 @@
 'use client';
 
 import { useWithdrawals } from '@/hooks/useWithdrawals';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { formatEther } from 'viem';
+import { formatDistanceToNow } from 'date-fns';
 
 export function WithdrawalTrackingTable() {
-  const { withdrawals } = useWithdrawals();
-
-  if (Object.keys(withdrawals).length === 0) {
-    return <div>No withdrawals found</div>;
-  }
+  const { allWithdrawals } = useWithdrawals();
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full">
-        <thead>
-          <tr className="border-b">
-            <th className="px-4 py-2 text-left">Date</th>
-            <th className="px-4 py-2 text-left">Total Amount to Unstake</th>
-            <th className="px-4 py-2 text-left">Number of Withdrawals</th>
-            <th className="px-4 py-2 text-left">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Object.entries(withdrawals).map(([date, data]) => (
-            <tr key={date} className="border-b hover:bg-gray-50">
-              <td className="px-4 py-2">{date}</td>
-              <td className="px-4 py-2">{data.totalAmount} PEAQ</td>
-              <td className="px-4 py-2">{data.withdrawals.length}</td>
-              <td className="px-4 py-2">
-                {data.withdrawals.some((w) => w.status === 'pending')
-                  ? 'Pending'
+    <div className="rounded-md border">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Amount</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Unlock Time</TableHead>
+            <TableHead>Time Remaining</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {allWithdrawals.map((withdrawal, index) => (
+            <TableRow key={index}>
+              <TableCell>
+                {formatEther(BigInt(withdrawal.amount))} PEAQ
+              </TableCell>
+              <TableCell>
+                <span
+                  className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                    withdrawal.status === 'pending'
+                      ? 'bg-yellow-100 text-yellow-800'
+                      : 'bg-green-100 text-green-800'
+                  }`}
+                >
+                  {withdrawal.status}
+                </span>
+              </TableCell>
+              <TableCell>
+                {new Date(withdrawal.unlockTime * 1000).toLocaleString()}
+              </TableCell>
+              <TableCell>
+                {withdrawal.status === 'pending'
+                  ? formatDistanceToNow(withdrawal.unlockTime * 1000, {
+                      addSuffix: true,
+                    })
                   : 'Completed'}
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 }

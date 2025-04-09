@@ -24,6 +24,7 @@ interface GroupedWithdrawals {
 
 export function useWithdrawals() {
   const [withdrawals, setWithdrawals] = useState<GroupedWithdrawals>({});
+  const [allWithdrawals, setAllWithdrawals] = useState<Withdrawal[]>([]);
 
   useEffect(() => {
     const fetchWithdrawals = async () => {
@@ -48,6 +49,8 @@ export function useWithdrawals() {
             status,
           };
         });
+
+        setAllWithdrawals(formattedWithdrawals);
 
         // Group withdrawals by date
         const groupedWithdrawals =
@@ -75,5 +78,5 @@ export function useWithdrawals() {
     fetchWithdrawals();
   }, []);
 
-  return { withdrawals };
+  return { withdrawals, allWithdrawals };
 }
