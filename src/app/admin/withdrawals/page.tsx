@@ -12,6 +12,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { formatEther } from 'viem';
+import { publicClient } from '@/lib/publicClient';
+import { liquidStakingAbi, liquidStakingAddress } from '@/lib/LiquidStaking';
 
 type WithdrawalRequest = {
   amount: string;
@@ -31,18 +33,46 @@ type DailySummary = {
   requestCount: number;
 };
 
+type PEAQBreakdown = {
+  totalStaked: bigint;
+  withCollators: bigint;
+  pendingWithdrawal: bigint;
+  availableForStaking: bigint;
+};
+
 export default function WithdrawalsPage() {
   const { ready } = usePrivy();
   const [withdrawals, setWithdrawals] = useState<UserWithdrawals[]>([]);
   const [dailySummaries, setDailySummaries] = useState<DailySummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [peaqBreakdown, setPeaqBreakdown] = useState<PEAQBreakdown>({
+    totalStaked: BigInt(0),
+    withCollators: BigInt(0),
+    pendingWithdrawal: BigInt(0),
+    availableForStaking: BigInt(0),
+  });
 
   useEffect(() => {
     if (!ready) return;
 
-    const fetchWithdrawals = async () => {
+    const fetchData = async () => {
       try {
+        // Fetch all contract data in parallel
+        const [totalStakedPEAQ, peaqWithCollators] = await Promise.all([
+          publicClient.readContract({
+            address: liquidStakingAddress,
+            abi: liquidStakingAbi,
+            functionName: 'totalStakedPEAQ',
+          }),
+          publicClient.readContract({
+            address: liquidStakingAddress,
+            abi: liquidStakingAbi,
+            functionName: 'getPEAQWithCollators',
+          }),
+        ]);
+
+        // Fetch withdrawal requests
         const response = await fetch('/api/withdrawals');
         const data = await response.json();
 
@@ -51,6 +81,35 @@ export default function WithdrawalsPage() {
         }
 
         setWithdrawals(data.data);
+
+        // Calculate pending withdrawal amount
+        const pendingWithdrawal = data.data.reduce(
+          (total: bigint, userWithdrawals: UserWithdrawals) => {
+            return userWithdrawals.requests.reduce(
+              (userTotal: bigint, request: WithdrawalRequest) => {
+                if (!request.isClaimable) {
+                  return userTotal + BigInt(request.amount);
+                }
+                return userTotal;
+              },
+              total
+            );
+          },
+          BigInt(0)
+        );
+
+        // Calculate available for staking
+        const availableForStaking =
+          (totalStakedPEAQ as bigint) -
+          (peaqWithCollators as bigint) -
+          pendingWithdrawal;
+
+        setPeaqBreakdown({
+          totalStaked: totalStakedPEAQ as bigint,
+          withCollators: peaqWithCollators as bigint,
+          pendingWithdrawal,
+          availableForStaking,
+        });
 
         // Calculate daily summaries
         const summaries = new Map<
@@ -89,16 +148,14 @@ export default function WithdrawalsPage() {
 
         setDailySummaries(sortedSummaries);
       } catch (err) {
-        console.error('Error fetching withdrawals:', err);
-        setError(
-          err instanceof Error ? err.message : 'Failed to fetch withdrawals'
-        );
+        console.error('Error fetching data:', err);
+        setError(err instanceof Error ? err.message : 'Failed to fetch data');
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchWithdrawals();
+    fetchData();
   }, [ready]);
 
   if (!ready) {
@@ -107,6 +164,57 @@ export default function WithdrawalsPage() {
 
   return (
     <div className="container mx-auto py-20 max-w-3xl space-y-6">
+      {/* PEAQ Distribution Breakdown */}
+      <Card>
+        <CardHeader>
+          <CardTitle>PEAQ Distribution</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div className="text-center py-8">Loading distribution...</div>
+          ) : error ? (
+            <div className="text-center text-red-500 py-8">{error}</div>
+          ) : (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <div className="text-sm text-muted-foreground">
+                    Total Staked
+                  </div>
+                  <div className="text-lg font-bold">
+                    {formatEther(peaqBreakdown.totalStaked)} PEAQ
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-sm text-muted-foreground">
+                    With Collators
+                  </div>
+                  <div className="text-lg font-bold">
+                    {formatEther(peaqBreakdown.withCollators)} PEAQ
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-sm text-muted-foreground">
+                    Pending Withdrawal
+                  </div>
+                  <div className="text-lg font-bold">
+                    {formatEther(peaqBreakdown.pendingWithdrawal)} PEAQ
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-sm text-muted-foreground">
+                    Available for Staking
+                  </div>
+                  <div className="text-lg font-bold">
+                    {formatEther(peaqBreakdown.availableForStaking)} PEAQ
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Future Claims Summary */}
       <Card>
         <CardHeader>
